@@ -1,0 +1,34 @@
+/* CRIAR UMA PROCEDURE COMPLETA E DPS CONSULTE ELA: */
+select * from endereco;
+desc endereco;
+
+create table endereco(
+	idendereco int primary key auto_increment,
+	numero int(4) not null,
+	rua varchar(100) not null,
+	bairro varchar(100) not null,
+	cidade varchar(30) not null
+);
+
+delimiter $
+/*p = parâmetro*/
+create procedure cad_endereco(
+	p_numero int(4),
+	p_rua varchar(100),
+	p_bairro varchar(100),
+	p_cidade varchar(30)
+	)
+	begin
+	 insert into endereco values(null,p_numero,p_rua,p_bairro,p_cidade);
+	end
+	$
+
+delimiter ;
+call cad_endereco(134,'Joaquim Valasco de Souza','Nobuji Nagasawa','Bauru');
+
+
+consultando ela:
+select * from cad_endereco;
+
+
+

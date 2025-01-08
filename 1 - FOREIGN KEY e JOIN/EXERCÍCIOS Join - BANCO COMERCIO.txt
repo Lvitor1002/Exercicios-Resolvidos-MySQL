@@ -1,0 +1,126 @@
+Exercícios:
+
+
+/* RELATORIO GERAL DE TODOS OS CLIENTES */
+
+select c.idcliente, c.nome, c.sexo, c.email, c.cpf, 
+	e.rua, e.bairro, e.cidade, e.estado, 
+	t.tipo, t.numero    
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente
+inner join telefone t
+on c.idcliente = t.id_cliente;
+
+
+
+
+/* RELATORIO GERAL DE TODOS OS CLIENTES (TELEFONE E ENDERECO) */
+
+
+select c.idcliente, c.nome, 
+	t.tipo, t.numero,e.rua, 
+	e.bairro, e.cidade, e.estado
+from cliente c
+inner join telefone t
+on c.idcliente = t.id_cliente
+inner join endereco e
+on c.idcliente = e.id_cliente;
+
+
+
+/* RELATORIO DE HOMENS */
+
+select c.idcliente, c.nome, c.sexo, c.email,c.cpf,
+	e.rua,e.bairro,e.cidade,e.estado,
+	t.tipo,t.numero
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente
+inner join telefone t
+on c.idcliente = t.id_cliente
+where c.sexo = 'm';
+
+
+/* RELATORIO DE MULHERES */
+
+select c.idcliente,c.nome,c.sexo,
+	e.rua,e.bairro,e.cidade,e.estado,
+	t.tipo,t.numero
+from cliente c
+inner join endereco e 
+on c.idcliente = e.id_cliente
+inner join telefone t
+on c.idcliente = t.id_cliente
+where c.sexo = 'f'; 
+
+
+/* QUANTIDADE DE MULHERES e HOMENS*/
+
+select count(*) as Quantidade, Sexo from cliente group by sexo;
+
+
+
+/* IDS E EMAIL DAS MULHERES QUE MOREM NO CENTRO DO RIO DE JANEIRO E 
+NAO TENHAM CELULAR */
+
+(Não está 100% certo) ->
+
+select c.idcliente, c.nome, c.email, c.sexo,
+	t.tipo, 
+	e.bairro, e.cidade, e.estado
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente
+inner join telefone t
+on c.idcliente = t.id_cliente
+where c.sexo = 'f' and e.cidade = 'Rio De Janeiro' and e.bairro = 'centro' and not tipo = 'cel';  /* Quando é end não precisa de comparação de valor maior*/
+
+
+
+
+/* PARA UMA CAMPANHA DE MARKETING, O SETOR SOLICITOU UM
+RELATÓRIO COM O NOME, EMAIL E TELEFONE CELULAR 
+DOS CLIENTES QUE MORAM NO ESTADO DO RIO DE JANEIRO 
+VOCÊ TERÁ QUE PASSAR A QUERY PARA GERAR O RELATORIO PARA
+O PROGRAMADOR */
+
+select c.idcliente, c.nome, c.email,
+	t.numero as celular, 
+	e.estado
+from cliente c
+inner join telefone t
+on c.idcliente = t.id_cliente
+inner join endereco e
+on c.idcliente = e.id_cliente
+where e.estado = 'RJ' and t.tipo = 'cel';
+
+
+
+/* PARA UMA CAMPANHA DE PRODUTOS DE BELEZA, O COMERCIAL SOLICITOU UM
+RELATÓRIO COM O NOME, EMAIL E TELEFONE CELULAR 
+ DAS MULHERES QUE MORAM NO ESTADO DE SÃO PAULO 
+VOCÊ TERÁ QUE PASSAR A QUERY PARA GERAR O RELATORIO PARA
+O PROGRAMADOR */
+
+select c.nome, c.email, 	  /* PROJECAO */
+	t.numero as CELULAR
+from cliente c 				  /* ORIGEM */
+inner join telefone t 		  /*JUNCAO */
+on c.idcliente = t.id_cliente /*JUNCAO CONDICAO */
+inner join endereco e 		  /*JUNCAO */
+on c.idcliente = e.id_cliente /*JUNCAO CONDICAO */
+where c.sexo = 'f' and  e.estado = 'sp'; /*SELECAO*/
+
+
+Trazer /* nome, email, numero, estado */ sem mostrar os NULL trocando por outra coisa 
+
+select 
+c.nome, IFNULL(c.email,'***********') as 'e-mail', 	<- Coloquei os AS email para ficar bonito, mas é Opcional
+t.numero,
+e.estado
+from cliente c
+inner join telefone t
+on c.idcliente = t.id_cliente
+inner join endereco e
+on c.idcliente = e.id_cliente;

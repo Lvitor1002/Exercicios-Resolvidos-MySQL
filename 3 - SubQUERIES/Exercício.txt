@@ -1,0 +1,152 @@
+-- Exercício 1
+-- Selecione o nome e o email de todos os clientes que possuem um telefone celular.
+select c.nome, c.email, t.numero, t.tipo 
+from cliente c
+inner join telefone t
+on c.idcliente = t.id_cliente
+where c.idcliente in (select id_cliente from telefone where tipo = 'cel');
+
+
+
+-- Exercício 2
+-- Liste o nome, CPF e a quantidade de telefones de cada cliente.
+select c.nome, c.cpf, count(t.idtelefone) as 'Telefones por cliente'
+from cliente c
+left join telefone t
+on c.idcliente = t.id_cliente
+group by c.nome, c.cpf;
+
+
+
+
+-- Exercício 3
+-- Encontre os clientes que não possuem endereço.
+select c.nome as Clientes, ifnull(e.idendereco,'Sem endereço') as 'Endereço'
+from cliente c
+left join endereco e
+on c.idcliente = e.id_cliente 
+where c.idcliente not in(select id_cliente from endereco);
+
+
+
+-- Exercício 4
+-- Retorne o nome e o email dos clientes que residem na CIDADE de "São Paulo".
+select c.nome as Cliente, c.email, e.cidade as "Cidade"
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente
+where e.cidade like '%Saõ Paulo%'; 
+
+
+
+-- Exercício 5
+-- Obtenha o nome e o número de telefone de clientes que possuem mais de um telefone.
+select c.nome, t.numero
+from cliente c
+inner join telefone t
+on c.idcliente = t.id_cliente
+where c.idcliente in(select ID_CLIENTE from telefone group by ID_CLIENTE having count(idtelefone) > 1);
+
+
+
+
+-- Exercício 6
+-- Liste os clientes que têm o mesmo número de telefone.
+select c.nome as Clientes, t.numero
+from cliente c
+left join telefone t
+on c.idcliente = t.id_cliente
+where t.numero in (select IDTELEFONE from telefone group by numero having count(*) >1);
+
+
+
+-- Exercício 7
+-- Encontre os clientes que têm pelo menos um endereço em comum.
+select distinct c1.nome as Cliente1, c2.nome as Cliente2
+from cliente c1
+
+inner join endereco e1 
+on c1.idcliente = e1.id_cliente
+
+inner join cliente c2
+on c1.idcliente < c2.idcliente
+
+inner join endereco e2
+on c2.idcliente = e2.id_cliente
+
+where E1.RUA = E2.RUA AND E1.BAIRRO = E2.BAIRRO AND E1.CIDADE = E2.CIDADE AND E1.ESTADO = E2.ESTADO;
+
+
+
+-- Exercício 8
+-- Liste os clientes que têm o mesmo endereço de e-mail.
+select c1.nome as cliente1, c2.nome as cliente2, c1.email as Email 
+from cliente c1
+inner join cliente c2 
+on c1.idcliente < c2.idcliente
+where c1.email = c2.email;
+
+
+
+-- Exercício 9
+-- Selecione os clientes que têm telefones residenciais e comerciais.
+select c.nome as Clientes, t.tipo as Telefones
+from cliente c
+inner join telefone t
+on c.idcliente = t.id_cliente
+where t.tipo in("res","com") order by Telefones;
+
+
+
+
+-- Exercício 11
+-- Liste os clientes que possuem endereço no mesmo estado.
+select c1.nome as '|<   Clientes1   >|', c2.nome as '|<  Clientes2  >|', e2.estado as Estado
+from cliente c1
+inner join cliente c2
+on c1.idcliente < c2.idcliente
+inner join endereco e1
+on c1.idcliente = e1.id_cliente 
+inner join endereco e2 
+on c2.idcliente = e2.id_cliente
+where e1.estado = e2.estado 
+order by e1.estado, e2.estado;
+
+
+
+-- Exercício 12
+-- Retorne o nome dos clientes que têm endereço na mesma cidade e bairro.
+select c1.nome as Cliente1, c2.nome as Cliente2, e1.cidade, e1.bairro
+from cliente c1
+inner join cliente c2
+on c1.idcliente < c2.idcliente
+inner join endereco e1
+on c1.idcliente = e1.id_cliente
+inner join endereco e2
+on c2.idcliente = e2.id_cliente
+where (e1.cidade = e2.cidade) and (e1.bairro = e2.bairro);
+
+
+
+-- Exercício 13
+-- Selecione o nome dos clientes que possuem endereço, mas não têm telefone.
+select c.nome
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente
+where c.idcliente not in (select id_cliente from telefone);
+
+
+
+-- Exercício 14
+-- Liste os clientes que têm telefones celulares e residenciais.
+select c.nome, t1.tipo, t2.tipo
+from cliente c
+inner join telefone t1
+on c.idcliente = t1.id_cliente
+inner join telefone t2
+on c.idcliente = t2.id_cliente
+where t1.tipo = 'cel' and t2.tipo = 'res';
+
+
+

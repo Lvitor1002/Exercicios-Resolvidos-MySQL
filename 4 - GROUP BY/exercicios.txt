@@ -1,0 +1,289 @@
+
+
+#GROUP BY------------------------------------------------------------------------
+
+Liste a contagem de clientes por sexo.
+select sexo as Gêneros, count(idcliente) as 'Quantidade de pessoas' from cliente group by sexo;
+
+
+Obtenha a média de telefones por cliente.
+select c.nome, avg(count(t.idtelefone)) OVER () as 'Média da quantidade de telefones'
+from cliente c
+inner join telefone t
+on c.idcliente = t.id_cliente
+group by c.nome;
+
+	
+
+Encontre a quantidade de clientes por estado que possuem pelo menos um telefone.
+SELECT e.estado AS Estado, COUNT(DISTINCT c.idcliente) AS 'Quantidade de clientes'
+FROM cliente c
+INNER JOIN endereco e 
+ON c.idcliente = e.id_cliente
+INNER JOIN telefone t 
+ON c.idcliente = t.id_cliente
+GROUP BY e.estado HAVING COUNT(t.numero) >= 1;
+
+
+
+Liste o número médio de telefones por tipo (RES, COM, CEL).
+select tipo as Tipos, avg(count(idtelefone)) over() as Média from telefone group by tipo; 
+
+
+
+
+Liste a quantidade de endereços por cliente ordenado de forma decrescente.
+
+select c.nome as Clientes, count(e.idendereco) as 'Quantidade de endereco por cliente'
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente
+group by c.idcliente order by c.idcliente desc;
+
+
+
+Obtenha a soma dos CPFs distintos por sexo.
+select sexo, count(distinct cpf) as "Soma dos cpf's" from cliente group by sexo;
+
+
+
+Identifique os clientes que têm o mesmo número de endereços e telefones.
+select c.nome as Clientes, count(distinct e.idendereco) as Enderecos, count(distinct t.idtelefone) as Telefones
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente 
+inner join telefone t
+on c.idcliente = t.id_cliente
+group by c.idcliente having Enderecos = Telefones;
+
+
+
+
+Liste a quantidade de clientes que têm mais de um endereço e mais de um telefone.
+select c.idcliente, count(DISTINCT e.idendereco) as qtd_endereco, count(DISTINCT t.idtelefone) as qtd_telefone
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente
+inner join telefone t
+on c.idcliente = t.id_cliente
+group by c.idcliente having qtd_endereco > 1 and qtd_telefone > 1;
+
+
+
+
+
+#HAVING:--------------------------------------------------------------------------------------------------
+
+
+Liste os tipos de telefone com mais de 2 ocorrências.
+
+select tipo, count(tipo) as Ocorrencia from telefone group by tipo having Ocorrencia > 2;
+
+
+
+
+Identifique os estados com mais de 3 clientes.
+select e.estado as Estado, group_concat(c.nome) as Clientes
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente
+group by e.estado having count(c.idcliente) > 3;
+
+
+
+
+
+Encontre os clientes que possuem pelo menos 2 endereços.
+select c.idcliente, c.nome, count(distinct e.idendereco) as qtd_enderecos
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente
+group by c.idcliente, c.nome having qtd_enderecos >= 2;
+
+
+
+
+Liste os clientes que têm mais de um telefone do tipo 'CEL'.
+select c.nome as Clientes, count(t.tipo = 'cel') as Quantidade
+from cliente c
+inner join telefone t
+on c.idcliente = t.id_cliente
+group by c.nome having Quantidade >= 1; 
+
+
+
+
+
+Identifique os clientes que têm a mesma quantidade de endereços e telefones.
+select c.nome as Clientes, count(distinct e.idendereco) as qtd_enderecos, count(distinct t.idtelefone) as qtd_telefones
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente 
+inner join telefone t
+on c.idcliente = t.id_cliente
+group by c.nome HAVING qtd_enderecos = qtd_telefones;
+
+
+
+
+Encontre os tipos de telefone com pelo menos 1 ocorrência e no máximo 3.
+select tipo, count(idtelefone) as qtd_telefones from telefone
+group by tipo having qtd_telefones BETWEEN 1 AND 3;
+
+
+
+
+Liste os estados com mais de 2 clientes do sexo feminino.
+
+select e.estado as Estado, c.sexo as Sexo, group_concat(distinct c.nome) as Clientes
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente
+where c.sexo = 'F'
+group by e.estado having count(c.idcliente) > 2;
+
+
+
+
+Identifique os clientes que possuem pelo menos um telefone e um endereço.
+select c.nome as Clientes, count(distinct t.idtelefone) as qtd_telefones, count(distinct e.idendereco) as qtd_enderecos
+from cliente c
+inner join telefone t
+on c.idcliente = t.id_cliente
+inner join endereco e
+on c.idcliente = e.id_cliente
+group by c.nome having qtd_enderecos >= 1 and qtd_telefones >= 1 order by nome asc;
+
+
+
+
+Liste os clientes que têm mais de um endereço OU mais de um telefone.
+select c.nome as Clientes, count(distinct e.idendereco) as qtd_enderecos, count(distinct t.idtelefone) as qtd_telefones
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente
+inner join telefone t
+on c.idcliente = t.id_cliente
+group by c.nome having qtd_enderecos >1 or  qtd_telefones > 1 order by c.nome asc;
+
+
+
+
+Encontre os clientes que têm pelo menos um endereço em comum.
+select c1.nome as Cliente1, c2.nome as Cliente2, e1.Rua, e1.Bairro, e1.Cidade
+from cliente c1
+inner join cliente c2
+on c1.idcliente < c2.idcliente
+inner join endereco e1 
+on c1.idcliente = e1.id_cliente
+inner join endereco e2
+on c2.idcliente = e2.id_cliente
+where e1.Rua = e2.Rua and 
+	  e1.Bairro = e2.Bairro and 
+	  e1.Cidade = e2.Cidade;
+
+
+
+
+#DISTINCT------------------------------------------------------------------------------
+
+
+Liste os estados distintos dos clientes ou seja não pode repetir os estados.
+select distinct e.estado as Estados, c.nome as Clientes
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente;
+
+
+
+
+
+
+Obtenha os tipos distintos de telefone.
+SELECT DISTINCT TIPO
+FROM TELEFONE;
+
+
+
+
+Liste os nomes distintos dos clientes do sexo masculino.
+select distinct nome as Cliente, sexo as Gêneros from cliente where sexo = 'M' order by nome asc;
+
+
+
+
+AQUI -=-=-=-=-=-
+
+Encontre os e-mails distintos dos clientes que têm telefone do tipo 'CEL'
+select distinct c.email as 'Email sem repetir', c.nome as Clientes, t.tipo as Tipos
+from cliente c
+inner join telefone t 
+on c.idcliente = t.id_cliente
+where t.tipo = 'cel';
+
+
+
+
+
+Identifique os CPFs distintos dos clientes que têm mais de um endereço.
+select distinct c.cpf as CPF
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente
+group by c.cpf having count(distinct e.idendereco) > 1;
+
+
+
+
+
+Liste as cidades distintas dos clientes que têm telefone do tipo 'RES'
+select distinct e.cidade as Cidades, c.nome, t.tipo as 'Tipos de telefone'
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente
+inner join telefone t
+on c.idcliente = t.id_cliente
+where t.tipo = 'res';
+
+
+
+Obtenha os tipos de telefone distintos dos clientes do estado 'SP'.
+select distinct t.tipo as Tipos, e.estado as Estado
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente
+inner join telefone t
+on c.idcliente = t.id_cliente 
+where e.estado = 'sp';
+
+
+
+Encontre os nomes distintos dos clientes que possuem pelo menos dois telefones.
+select distinct c.nome, count(t.numero) as qtd_telefones
+from cliente c
+inner join telefone t
+on c.idcliente = t.id_cliente
+group by c.nome having qtd_telefones >= 2;
+
+
+
+
+Liste os e-mails distintos dos clientes que têm endereço na cidade de 'Rio de Janeiro'.
+select distinct c.email as 'Emails únicos', e.cidade as Cidade
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente
+where e.cidade = 'Rio de janeiro';
+
+
+
+
+
+Identifique os nomes distintos dos clientes que têm o mesmo número de endereços e telefones.
+select distinct c.nome, count(distinct e.idendereco) as qtd_endereco, count(distinct t.idtelefone) as qtd_telefone
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente
+inner join telefone t
+on c.idcliente = t.id_cliente
+group by c.nome having qtd_endereco = qtd_telefone order by nome asc; 

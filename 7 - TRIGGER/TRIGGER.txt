@@ -1,0 +1,49 @@
+
+/*Banco aula04*/
+CREATE TABLE usuario(
+idusuario int primary key auto_increment,
+nome varchar(30),
+login varchar(30),
+senha varchar(100)
+);
+
+create table bkp_usuario(
+idbackup int primary key auto_increment,
+idusuario int,
+nome varchar(30),
+login varchar(30)
+);
+
+/*
+delimiter$
+CREATE TRIGGER NOME
+BEFORE/AFTER INSERT/DELETE/UPDATE ON TABELA
+FOR EACH ROW (PARA CADA LINHA)
+BEGIN -> INICIO
+
+		QUALQUER COMANDO SQL
+
+END -> FIM
+*/
+
+delimiter$
+CREATE TRIGGER BACKUP_USER
+BEFORE DELETE ON USUARIO
+FOR EACH ROW 
+BEGIN
+		
+	INSERT INTO BKP_USUARIO VALUES
+	(NULL,OLD.IDUSUARIO,OLD.NOME,OLD.LOGIN); /*Guando deletar a tabela USUARIO, SALVAR TUDO NA TABELA BKP_USUARIO*/
+END
+$
+
+
+
+/*Inserindo valores para depois excluir a tabela usuario para ver se será salvo em bkp_usuario:*/
+delimiter;
+insert into usuario(idusuario,nome,login,senha)values(null,'ANDRADE','ANDRADE2009','HEXACAMPEAO');
+
+DELETE FROM USUARIO WHERE IDUSUARIO = 1;
+
+consultar: 
+SELECT * FROM bkp_USUARIO;

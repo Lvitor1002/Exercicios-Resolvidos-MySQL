@@ -1,0 +1,357 @@
+create database cadastro;                         <---  criando um banco de dados. (DDL=DATA Definition Language)
+
+__________________________________________________________________________________________________________________________________________________________________________________________
+
+create database cadastro                          <---  criando um banco de dados diferente.  (DDL=DATA Definition Language)
+default character set utf8
+default collate utf8_general_ci;
+
+__________________________________________________________________________________________________________________________________________________________________________________________
+
+
+use cadastro;   <-- para ativar o banco de dados, dps pode apagar
+                                                                
+                                                                        <--  criando tabelas.  (DDL=DATA Definition Language)                              
+create table pessoas (   
+	id int not null auto_increment,
+	nome varchar(15) not null UNIQUE(se quiser),
+    nascimento date,
+    sexo enum('M','F'),
+    peso decimal(5,2),
+    altura decimal(3,2),
+    nacionalidade varchar(50) default 'Brasil',
+    primary key (id)
+)default charset = utf8;
+
+
+create table if not exists cursos(
+	nome varchar(30) not null unique,                               <- Criar tabela apenas de se tal tabela não existir
+    descricao text,
+    carga int unsigned,
+    totalulas int unsigned,
+    ano year default '2016'
+)default charset = utf8;
+
+
+create table gafanhotos_assiste_curso(                         <- Criando tabela extra com primary key e duas chaves estrangeiras
+	id int not null auto_increment,
+	data date,
+	idgafanhotos int,
+	idcurso int,
+	primary key(id),
+	foreign key(idgafanhotos) references gafanhotos(id),    <- ligando idgafanhotos com o id da tabela gafanhotos
+	foreign key(idcurso) references cursos(idcurso)         <- ligando idcurso com o id da tabela cursos
+)default charset = utf8;
+
+
+__________________________________________________________________________________________________________________________________________________________________________________________
+
+describe pessoas;                                                 <-- descrever tabela pessoas
+
+__________________________________________________________________________________________________________________________________________________________________________________________
+
+Constraints/restrições: 
+
+UNIQUE/exclusiva; Não pode repetir a mesma informação 
+
+
+
+
+CHECK: Especifica uma condição que deve ser verdadeira,  tipo um (if)
+create table luiz(
+	salario number(8,2) Constraint lui_salar_min CHECK(salario >0),  ou --> alter table projeto add Constraint proj_ini_fin CHECK(DATA_INICIO < DATA_FINAL) ou sem alterar --> constraint data_ini_fim check (data_inicio <= data_fim)
+	.
+	.
+	.
+);
+
+
+
+Constraints a nível de COLUNA: É necessário definir as constraints NOT NULL no nível da
+coluna.
+create table cursos(
+	id_cursos number(6),
+	constraints cur_cur_id_pk primary key,
+	primeiro_nome varchar(20);
+
+
+
+Constraints a nível de TABELA:
+create table cursos(
+	id_cursos number(6),
+	primeiro_nome varchar(20);
+	sexo enum,
+	constraints cur_cur_id_pk primary key(id_cursos));
+_______________________________________________________________________________________________________________________________________________________________________________
+ 
+drop database cadastro;                                                <-- apagar banco
+
+drop table if exists cursos;                                              <- apagar tabela cursos
+
+delete from cursos where id = '2';                                              <- apagar linhas da tabela cursos
+
+truncate table cursos;  								<- apagar todas as linhas depois de desmarcar a opcao no mysql
+__________________________________________________________________________________________________________________________________________________________________________________________
+
+										 <-Inserir Dados. (DML=DATA Manipulation Language)
+insert into pessoas
+(id, nome, nascimento, sexo, peso, altura, nacionalidade)
+values
+(defautl,'Luiz','2000-05-11','M','69.70','1.76','Brasil');
+
+__________________________________________________________________________________________________________________________________________________________________________________________
+
+alter table pessoas add column profissao varchar(10);               <- add coluna profissão na tabela pessoas
+
+alter table pessoas drop column profissao;                           <- Excluir coluna profissão
+
+alter table pessoas add column profissao varchar(10) after id;      <- add profissão depois do id
+
+alter table pessoas add column codigo int first;        		  <- add codigo como primeiro
+
+alter table pessoas add primary key (codigo);      		        <- tornado codigo como primeira chave
+
+!!!!!!!!!!!!!!!!!!!!!     OBS: para alterar é necessário excluir primeiro    !!!!!!!!!!!!!!!!!!!!!!
+
+
+alter table pessoas modify column profissao varchar(20)  (/ou/)  alter table pessoas modify column profissao varchar(20) not null default '';               <- Para modificar a coluna profissão para varchar(20)
+
+alter table pessoas change column profissao prof varchar(20);         <- Aterando o nome da coluna profissão para prof
+
+delete from cadfun where idade = '2';
+__________________________________________________________________________________________________________________________________________________________________________________________
+
+alter table pessoas rename to person;               <- Alterando o nome pessoas para person
+
+__________________________________________________________________________________________________________________________________________________________________________________________
+
+update cursos set nome = 'HTMLNOVO', ano = '2000'                         <-- alterando as linhas da tabela cursos
+where id = '5';
+limit 1; (<- para caso haja erro altere apenas a linha 5 em evidência)
+
+
+						outro modo ->
+
+update cursos set ano = '2015',carga = '40'
+where ano = '2014';    (<- sendo assim (where ano) sera alterado igualmente os valores para todos os anos 2014)
+
+
+__________________________________________________________________________________________________________________________________________________________________________________________
+
+aula 8 (https://www.youtube.com/watch?v=w6OYS_M7hTM&list=PLHz_AreHm4dkBs-795Dsgvau_ekxg8g1r&index=10) ensina a Gerenciar Cópias de Segurança MySQL
+
+__________________________________________________________________________________________________________________________________________________________________________________________
+
+select * from cursos order by nome asc;       <- select, ordenando por coluna desejada em ordem. Nesse caso escolhi (nome)
+
+
+
+select * from cursos order by ano desc;   <- select, ordenando por coluna desejada em ordem (decrescente). Nesse caso escolhi (nome)
+
+
+
+select nome, carga, ano from cursos order by ano;		 <- filtrando quantas colunas quiser e ordenando o ano
+
+
+
+select nome, carga, ano from cursos where ano <= '2015' order by ano;	    <- apenas menores ou iguais a 2015				
+
+
+
+
+ 
+select * from cursos where ano = '2016' order by nome;     				 <- filtrando por linhas, aparecer apenas nos anos 2016							
+select nome, carga from cursos where ano = '2016' order by nome;			   <- outro exempo
+
+
+
+
+select nome, ano from cursos where ano between 2015 and 2019;				<- between(entre os anos)
+select nome, ano from cursos where ano between 2015 and 2016 order by ano desc, nome;	  <- outro exempo
+
+
+
+select nome, ano from cursos where ano in ('2014','2016','2018') order by ano;	   <- in(em ou nesses anos)
+
+
+			
+select * from cursos where carga > 35 and totaulas < 30;     
+select carga ,nome, totaulas from cursos where carga > 35 and totaulas < 30;      <-(AND)
+select carga ,nome, totaulas from cursos where carga > 35 or totaulas < 30;      <-(OR)
+
+
+
+select * from cursos where nome like'p%';       			<- like=(semelhante) todos os cursos com começo de letra P
+select * from cursos where nome like'%p';       			<- like=(semelhante) todos os cursos que terminam com letra P
+select * from cursos where nome like'%p%';       			<- like=(semelhante) todos os cursos com a letra P
+select * from cursos where nome not like'%p%';  			<- like=(semelhante) todos os cursos que não tem a letra P
+
+
+select distinct nacionalidade from gafanhotos;       		 <- para não repetir e mostrar apenas um de cada tipo
+
+select count(*) from cursos where carga;       			 <- Somando quantos registros tem a coluna carga
+select max(carga) from cursos;                 				<- maior carga
+select max(totaulas) from cursos where ano = '2016';      		 <- Mostrando o maior valor de aulas
+select nome, carga max(totaulas) from cursos where ano = '2016';    <- outro exemplo
+
+select sum(totaulas) from cursos where ano = '2016';     <- Somando totaulas dos cursos de 2016
+select avg(totaulas) from cursos;                   <- tirando a média
+
+
+select distinct totaulas from cursos order by totaulas;   <- Mostrar apenas 1 de cada, sem repetir.
+
+select totaulas, count(*) from cursos group by totaulas order by totaulas;  <- Contando quantos cursos tem para as aulas
+select * from cursos where totaulas = 12;   <- Para confirmar quantos cursos tem 12 aulas a serem cumpridas
+
+select sexo, count(*) from cliente group by sexo; <- Para mostrar a qntd de sexo M e F na tabela cliente
+
+select ano, count(*) from cursos where totaulas >30 group by ano having ano > 2013 
+order by count(*)desc;
+
+(Mostrando carga e total de horas. Dos cursos, onde ano maior que 2015, agrupado por carga com média maior que a média da carga padrão) media > 36,66
+select carga, count(*) from cursos where ano > 2015 group by carga having carga > (select avg(carga) from cursos);
+__________________________________________________________________________________________________________________________________________________________________________________________
+
+MODELO RELACIONAL / Entidade Relacionamento: 
+
+Primary key / Chave Primaria: Atributo único sendo diferente do outro. (exemplo: CPF, RG, id, Código de barras)
+
+
+Foreign key / Chave Estrangeira: É a chave primaria que veio de outra entidade para a atual entidade agora, chave de alguém, estrangeira. Troca de chaves
+
+alter table gafanhotos add foreign key (cursopreferido) references cursos (idcurso);   <-- chave de cursopreferido sendo estrangeiro para idcurso
+
+
+
+
+
+dois Exemplos de foreign key->
+
+
+1º)
+
+CREATE TABLE AULAS (
+  AUL_COD NUMBER(6), 
+  ALU_ID NUMBER(6),
+  CUR_COD NUMBER(6),
+  PRO_COD NUMBER(6),
+  DIS_COD NUMBER(6),
+CONSTRAINT AUL_AUL_COD_PK PRIMARY KEY (AUL_COD) 	 
+CONSTRAINT ALU_ID_FK FOREIGN KEY (ALU_ID) REFERENCES ALUNO(ALU_ID),
+   CONSTRAINT CUR_COD_FK FOREIGN KEY (CUR_COD) REFERENCES CURSO(CUR_COD),
+   CONSTRAINT PRO_COD_FK FOREIGN KEY (PRO_COD) REFERENCES PROFESSOR(PRO_COD),
+   CONSTRAINT DIS_COD_FK FOREIGN KEY (DIS_COD) REFERENCES DISCIPLINA(DIS_COD)
+   );
+
+INSERT INTO AULAS(AUL_COD,ALU_ID,CUR_COD,PRO_COD,DIS_COD)
+VALUES (1,1,1,1,1);
+
+INSERT INTO AULAS(AUL_COD,ALU_ID,CUR_COD,PRO_COD,DIS_COD)
+VALUES (2,1,1,2,2);
+
+INSERT INTO AULAS(AUL_COD,ALU_ID,CUR_COD,PRO_COD,DIS_COD)
+VALUES (3,1,1,3,3);
+
+
+
+
+2º)
+create table Aula(
+codigo_aula int,
+id_aluno_aula int,
+codigo_curso_cur int,
+codigo_disciplina_disc int,
+codigo_professor_prof int,
+
+constraint aula_cod_pk primary key(codigo_aula),
+constraint aula_id_aluno_fk foreign key(id_aluno_aula) references aluno(id_aluno),
+constraint aula_cod_curs_fk foreign key(codigo_curso_cur) references curso(codigo_curso),
+constraint aula_cod_disc_fk foreign key(codigo_disciplina_disc) references disciplina(codigo_disciplina),
+constraint aula_cod_prof_fk foreign key(codigo_professor_prof) references professor(codigo_professor)
+)default charset = utf8;
+
+
+
+
+
+update gafanhotos set cursopreferido = '6' where id = '1';   <-- Aluno de id 1 tem preferencia e gosta do curso de id 6. Método de 1 em 1 alteração
+
+
+(COM ESSE CÓDIGO MOSTRA O CURSO QUE CADA USUÁRIO PREFERE SEM REPETIR E SENDO DIRETO)
+select gafanhotos.nome, cursos.nome, cursos.ano     <-- mostrando nome e cursos preferido de gafanhotos e mostrando nome e ano de cursos
+from gafanhotos join cursos                  						 <-- Juntando gafanhotos com cursos
+on cursos.idcurso = gafanhotos.cursopreferido order by gafanhotos.nome;        <-- relação de foreign Keys idcursos e cursospreferido
+
+
+
+
+
+
+		
+_______         		  ______
+|	| 1	   /\	     1 |	  |     (Chave Estrangeira 1 para 1)----> Decidir qual a entidade será a dominante, depois pegar a chave da
+|  M  |-------/  \-------|   E  |    	                            não dominante e levar, tranferir para à dominante!
+|_____|	  \  /	 |______|
+	         \/
+
+
+_______         		  ______
+|	| 1	   /\	     n |	  |     (Chave Estrangeira 1 para MUITOS) ----> Pegar a chave do lado "1" e levar para "n" como chave estrangeira 
+|  F  |-------/  \-------|   D  |     
+|_____|	  \  /	 |______|
+	         \/
+
+
+
+_______     ________   	   ______
+|	|1  n|   /\	  |n   1|	   |     (Chave Estrangeira MUITOS para MUITOS)----> Pegar a chave de "c" e "p" e levar para "co"   
+|  c  |----|  /co\  |-----|   p  |    
+|_____|    |  \  /  |	  |______|
+	     |___\/___|
+	      
+                                   
+__________________________________________________________________________________________________________________________________________________________________________________________
+
+INNER JOIN (tabelas criadas para esse exemplo: 
+								gafanhotos
+								curso
+								gafanhotos_assiste_curso
+
+
+
+select * from gafanhotos gafanhotos join gafanhotos_assiste_curso gafanhotos_assiste_curso on  		<-JUNÇOES do id gafanhotos com o id da tabela gafanhotos_assiste_curso 
+gafanhotos.id = gafanhotos_assiste_curso.idgafanhotos;
+
+
+select * from gafanhotos gafanhotos join gafanhotos_assiste_curso gafanhotos_assiste_curso on  		<-JUNÇOES do id gafanhotos com o id da tabela gafanhotos_assiste_curso 
+gafanhotos.id = gafanhotos_assiste_curso.idgafanhotos
+join cursos cursos on
+cursos.idcursos = gafanhotos_assiste_curso.idcursos order by gafanhotos.nome;
+
+
+
+OPERADORES LÓGICOS:
+ 
+OR -> PARA QUE A SAIDA DA QUERY SEJA VERDADEIRA, BASTA QUE APENAS UMA CONDICAO SEJA VERDADEIRA.
+AND -> PARA QUE A SAIDA SEJA VERDADEIRA TODAS AS CONDICOES PRECISAM SER VERDADEIRAS.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

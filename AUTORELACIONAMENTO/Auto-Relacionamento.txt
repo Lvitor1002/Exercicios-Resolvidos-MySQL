@@ -1,0 +1,37 @@
+							Auto-Relacionamento
+
+create table cursos(
+idcurso int primary key auto_increment,
+nome varchar(30),
+horas int,
+valor float(10,2),
+id_prereq int
+);
+
+alter table cursos add constraint FK_PREREQ
+FOREIGN KEY(id_prereq) references CURSOS(idcurso);
+
+
+
+INSERT INTO CURSOS VALUES(NULL,'BD RELACIONAL',20,400.00,NULL);
+INSERT INTO CURSOS VALUES(NULL,'BUSINESS INTELLIGENCE',40,800.00,1);
+INSERT INTO CURSOS VALUES(NULL,'RELATORIOS AVANCADOS',20,600.00,2);
+INSERT INTO CURSOS VALUES(NULL,'LOGICA PROGRAM',20,400.00,NULL);
+INSERT INTO CURSOS VALUES(NULL,'RUBY',30,500.00,4);
+
+SELECT * FROM CURSOS;
+
+SELECT NOME, VALOR, HORAS, IFNULL(ID_PREREQ,"SEM REQ") REQUISITO
+FROM CURSOS;
+
+
+
+
+Traga o NOME, VALOR, HORAS E O NOME DO PRE REQUISITO DO CURSO */
+select 	c.nome as curso,
+		c.valor,
+		c.horas as carga,
+		IFNULL(p.nome,'---') as 'Pré-Requisitos'    <- IF o valor for nulo trocar por '---' e mudar o nome..
+from cursos c  										<- Tabela curso C
+left join cursos p  								<- Tabela Pré-requisito P
+on p.idcurso = c.id_prereq;

@@ -1,0 +1,277 @@
+-- Exercício 1
+
+
+
+group_concat(c.nome) as Clientes
+
+
+
+
+
+-- Exercício: Criar uma view que liste os clientes junto com seus respectivos endereços:
+
+CREATE VIEW VW_Endereços_clientes AS
+SELECT c.nome, c.cpf, c.nascimento, c.email, c.sexo, e.rua, e.bairro, e.cidade, e.estado
+FROM cliente c
+INNER JOIN endereco e ON c.idcliente = e.id_cliente;
+drop view VW_Endereços_clientes;
+
+
+
+-- Exercício: Criar uma view que mostre todos os livros juntamente com os detalhes de seus autores:
+
+CREATE VIEW livros_autores AS
+SELECT l.nome AS livro, c.nome AS autor, c.email AS email_autor
+FROM livros l
+INNER JOIN cliente c ON l.id_cliente = c.idcliente;
+
+
+
+-- Exercício: Criar uma view que conte o número de livros por gênero:
+
+create view VW_qtd_livros_genero as 
+    select ca.generos as Genero, count(l.idlivros) as 'Quantidade de livros'
+    from livros l
+    inner join categorias ca
+    on l.idlivros = ca.id_livros
+    group by ca.generos;
+
+drop view VW_qtd_livros_genero;
+
+
+
+--Exercício: Criar uma view que liste os clientes juntamente com seus números de telefone:
+
+create view VW_numeros_clientes as 
+    select c.nome as Clientes, t.numero as Numeros
+    from cliente c
+    left join telefone t
+    on c.idcliente = t.id_cliente; 
+
+drop view VW_numeros_clientes;
+
+
+
+--Exercício: Criar uma view que mostre a idade atual dos clientes com base na data de nascimento:
+
+create view VW_idade_atual as 
+    select nome as Clientes, year(curdate()) - year(nascimento) - (right(curdate(), 5) < right(nascimento, 5)) as Idade_atual 
+    from cliente order by Idade_atual asc;
+
+drop view VW_idade_atual;
+
+
+
+
+-- Exercício: Criar uma view que liste os livros mais recentes ordenados por data de publicação:
+
+create view VW_livros_recentes as 
+    select nome as Livros, publicacao as Data from livros order by publicacao desc;  
+drop view VW_livros_recentes;
+
+
+
+-- Exercício: Criar uma view que mostre a média de idade dos clientes por sexo:
+
+CREATE VIEW media_idade_por_sexo AS
+SELECT sexo, AVG(YEAR(CURDATE()) - YEAR(nascimento) - (RIGHT(CURDATE(), 5) < RIGHT(nascimento, 5))) AS media_idade
+FROM cliente
+GROUP BY sexo;
+
+
+
+-- Exercício: Criar uma view que liste os clientes que têm mais de um endereço:
+
+create view VW_endereco_clientes as 
+    select c.nome as Clientes, count(e.idendereco) as Quantidade_Endereco 
+    from cliente c
+    inner join endereco e
+    on c.idcliente = e.id_cliente
+    group by c.idcliente having Quantidade_Endereco > 1;
+
+drop view VW_endereco_clientes;
+
+
+
+-- Exercício: Criar uma view que mostre o número de telefone principal de cada cliente:
+
+create view VW_Exibe_numero as 
+    select c.nome as Clientes, max(t.numero) as Contato
+    from cliente c
+    inner join telefone t
+    on c.idcliente = t.id_cliente 
+    group by c.idcliente; 
+
+drop view VW_Exibe_numero;
+
+
+
+-- Exercício: Criar uma view que liste os clientes que têm livros publicados:
+create view VW_livros as 
+    select c.nome as Clientes, l.nome as Livros 
+    from cliente c
+    inner join livros l
+    on c.idcliente = l.id_cliente
+
+drop view VW_livros;
+
+
+-- Criar uma VIEW chamada `vwClientes` que exiba todos os dados dos clientes.
+
+create view VW_Clientes as
+    select idcliente as ID,nome as Clientes,cpf as CPF,nascimento as Data,email as 'E-mail',sexo as Gênero from cliente;
+
+drop view VW_Clientes;
+
+
+
+
+-- Criar uma VIEW chamada `vwEnderecos` que mostre os endereços completos dos clientes (incluindo rua, bairro, cidade e estado).
+
+create view VW_Enderecos as
+select c.nome as Clientes, e.rua as Rua, e.bairro as Bairro, e.cidade as Cidade, e.estado as Estado
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente; 
+
+drop view VW_Enderecos;
+
+
+
+
+-- Criar uma VIEW chamada `vwTelefones` que exiba os números de telefone de todos os clientes.
+
+CREATE VIEW vwTelefones AS
+SELECT c.IDCLIENTE, c.NOME, t.TIPO, t.NUMERO
+FROM CLIENTE c
+JOIN TELEFONE t ON c.IDCLIENTE = t.ID_CLIENTE;
+
+
+
+
+-- Criar uma VIEW chamada `vwClientesPorEstado` que liste os clientes agrupados por estado.
+
+create view VW_Clientes_Estados as 
+    select e.estado as Estados, group_concat(c.nome) as Clientes
+    from cliente c
+    left join endereco e
+    on c.idcliente = e.id_cliente 
+    group by e.estado;
+
+drop view VW_Clientes_Estados;
+
+
+
+-- Criar uma VIEW chamada `vwClientesComTelefone` que mostre os clientes que têm pelo menos um número de telefone registrado.
+
+create view vClientes_com_telefone as 
+select distinct c.idcliente, c.nome, t.numero
+from cliente c
+left join telefone t
+on c.idcliente = t.id_cliente;
+
+
+
+-- Criar uma VIEW chamada `vwClientesHomens` que exiba apenas os clientes do sexo masculino.
+
+create view VW_ClientesHomens as 
+    select nome as Clientes, sexo as Masculino from cliente where sexo = 'M';
+
+    drop view VW_ClientesHomens;
+
+
+
+
+-- Criar uma VIEW chamada `vwClientesSemEndereco` que exiba clientes que não possuem endereço cadastrado.
+
+create view VW_Clientes_Sem_Endereco as 
+    select c.nome as Clientes, e.*
+    from cliente c
+    left join endereco e
+    on c.idcliente = e.id_cliente
+    where c.idcliente not in(select id_cliente from endereco);
+
+    drop view VW_Clientes_Sem_Endereco;
+
+
+
+
+-- Criar uma VIEW chamada `vwClientesPorTipoTelefone` que agrupe os clientes por tipo de telefone (RES, COM, CEL) e conte quantos clientes têm cada tipo.
+
+create view VW_Clientes_Por_Tipo_Telefone as 
+    select group_concat(c.nome) as Clientes, t.tipo as Tipos, count(t.tipo) as Quantidade_clientes 
+    from cliente c
+    left join telefone t
+    on c.idcliente = t.id_cliente
+    GROUP BY t.tipo order by Quantidade_clientes desc;
+
+drop view VW_Clientes_Por_Tipo_Telefone;
+
+
+
+
+-- Criar uma VIEW chamada `vwClientesComMaisDeUmTelefone` que liste os clientes que possuem mais de um número de telefone.
+
+CREATE VIEW vwClientesComMaisDeUmTelefone AS
+SELECT c.IDCLIENTE, c.NOME
+FROM CLIENTE c
+JOIN TELEFONE t ON c.IDCLIENTE = t.ID_CLIENTE
+GROUP BY c.IDCLIENTE, c.NOME
+HAVING COUNT(t.IDTELEFONE) > 1;
+
+
+
+
+-- Criar uma VIEW chamada `vwClientesComEmailValido` que exiba os clientes que têm um formato de e-mail válido (por exemplo, contém '@').
+
+CREATE VIEW vwClientesComEmailValido AS
+SELECT * FROM CLIENTE WHERE EMAIL LIKE '%@%';
+
+
+
+
+
+-- Criar uma VIEW chamada `vwClientesComEnderecoCompleto` que mostre os clientes que têm todos os campos do endereço preenchidos.
+
+create view vClientes_Com_Endereco_Completo as 
+select c.nome, e.rua, e.bairro, e.cidade, e.estado
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente 
+where e.RUA IS NOT NULL AND e.BAIRRO IS NOT NULL AND e.CIDADE IS NOT NULL AND e.ESTADO IS NOT NULL;
+
+
+
+
+
+-- Criar uma VIEW chamada `vwClientesPorBairro` que agrupe os clientes por bairro.
+
+create view vwClientesPorBairro as
+select GROUP_CONCAT(c.nome) AS CLIENTES, e.bairro
+from cliente c
+inner join endereco e
+on c.idcliente = e.id_cliente group by e.bairro;
+
+
+
+
+-- Criar uma VIEW chamada `vwClientesComEnderecoIncompleto` que mostre os clientes que têm pelo menos um campo do endereço não preenchido.
+
+CREATE VIEW vwClientesComEnderecoIncompleto AS
+SELECT * FROM CLIENTE c
+WHERE c.IDCLIENTE IN (
+    SELECT ID_CLIENTE, rua, bairro, estado, cidade FROM ENDERECO
+    WHERE RUA IS NULL OR BAIRRO IS NULL OR CIDADE IS NULL OR ESTADO IS NOT NULL
+);
+
+
+
+
+-- Criar uma VIEW chamada `vwClientesComTelefoneResidencial` que liste os clientes que possuem pelo menos um telefone residencial.
+
+CREATE VIEW vClientes_Com_Telefone_Residencial AS
+select distinct c.idcliente, c.nome, t.numero, t.tipo
+from cliente c
+inner join telefone t
+on c.idcliente = t.id_cliente
+where t.tipo = 'res';
