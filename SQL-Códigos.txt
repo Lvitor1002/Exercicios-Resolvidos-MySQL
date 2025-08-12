@@ -99,6 +99,10 @@ insert into pessoas
 values
 (defautl,'Luiz','2000-05-11','M','69.70','1.76','Brasil');
 
+insert into tipoUsuario(id_tipoUsuario,descricaoTipoUsuario,nivelTipoUsuario)values(default,'Super Usuário','10');
+insert into tipoUsuario(id_tipoUsuario,descricaoTipoUsuario,nivelTipoUsuario)values(default,'Administrador','5');
+insert into tipoUsuario(id_tipoUsuario,descricaoTipoUsuario,nivelTipoUsuario)values(default,'Colaborador','1');
+
 __________________________________________________________________________________________________________________________________________________________________________________________
 
 alter table pessoas add column profissao varchar(10);               <- add coluna profissão na tabela pessoas

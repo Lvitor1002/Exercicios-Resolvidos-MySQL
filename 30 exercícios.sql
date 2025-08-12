@@ -106,16 +106,20 @@ group by(idcliente);
 
 Exercício 6: Encontrar o cliente mais velho:
 
-SELECT FLOOR(max(DATEDIFF(CURRENT_DATE(), nascimento) / 365.25)) AS menor_idade
-FROM cliente;
+
+select nome as Cliente, floor(datediff(current_date(), nascimento) / 365.25) as 'Maior idade'
+from cliente
+where nascimento = (select min(nascimento) from cliente);
 
 
 
 
 
-Encontrar o cliente mais novo:
+Encontrar o cliente mais novo: 
 
-select floor(min(datediff(current_date(), nascimento) / 365.25)) as 'Menor idade' from cliente;
+select nome as Cliente, floor(datediff(current_date(), nascimento) / 365.25) as 'Cliente mais novo'
+from cliente 
+where nascimento = (select max(nascimento) from cliente);
 
 
 
@@ -160,15 +164,14 @@ where c1.CPF = c2.CPF;
 
 
 
-
-
-Exercício 11: Listar os clientes que possuem livros publicados antes de 2010:
+Exercício 11: Listar os clientes que possuem livros publicados antes de 1852:
 
 select c.nome as Clientes, l.nome as Livros, l.publicacao as Ano 
 from cliente c  
 inner join livros l
 on c.idcliente = l.id_cliente
 where l.publicacao < '1852-01-01' order by publicacao desc;
+
 
 
 
@@ -209,8 +212,9 @@ group by l.idlivros having Categorias >= 1;
 
 Exercício 15: Calcular a idade média dos clientes por sexo:
 
-select sexo as Gênero, round(avg(year(current_date) - year(nascimento))) as 'Média de idades' from cliente group by(sexo); 
-
+select sexo as 'Sexo do Cliente', round(avg(year(current_date) - year(nascimento))) as 'Idade Média dos Clientes'
+from cliente
+group by sexo;
 
 
 
@@ -227,16 +231,21 @@ where c.idcliente not in(select id_cliente from telefone);
 
 Exercício 17: Listar os livros com mais de 10 anos de publicação:
 
-select nome as Livros, publicacao as Ano from livros where publicacao < date_sub(current_date, interval 10 year) order by publicacao;
-
+select nome as Livro, round(year(current_date) - year(publicacao)) as Anos
+from livros
+having Anos > 10
+order by Anos asc;
 
 
 
 Exercício 18: Contar quantos clientes são do sexo masculino e têm mais de 40 anos:
 
-select count(sexo) as 'Quantidade Sexo Masculino' from cliente where sexo = 'M' and nascimento < date_sub(current_date, interval 40 year);  
-
-
+select sexo, 
+	   count(sexo) as 'Quantidade de sexo', 
+	   SUM(nascimento < DATE_SUB(CURDATE(), INTERVAL 40 YEAR)) AS `Maiores de 40 anos`
+from cliente
+where sexo = 'M'
+group by sexo;
 
 
 Exercício 19: Encontrar os clientes que possuem mais de um endereço cadastrado:
