@@ -279,9 +279,15 @@ Exercício 21: Listar os clientes que possuem todos os tipos de telefone (RES, C
 
 Exercício 22: Encontrar o cliente com a maior quantidade de livros publicados:
 
-select c.nome as Cliente from cliente c
-join(select id_cliente, count(*) as Quantidade_Livros from livros group by id_cliente order by Quantidade_Livros desc limit 1) as subquery
-on c.idcliente = subquery.id_cliente; 
+select c.nome as Cliente 
+from cliente c
+join(
+	select id_cliente, count(*) as Quantidade_Livros
+	from livros 
+	group by id_cliente
+	order by Quantidade_Livros desc limit 1
+	) as subquery
+on c.idcliente = subquery.id_cliente;
 
 
 
@@ -302,18 +308,21 @@ on l.idlivros = ca.id_livros;
 
 Exercício 24: Encontrar os clientes que têm a mesma data de nascimento:
 
-select c1.nome as Cliente1, c1.nascimento as Nascimento1, c2.nome as Cliente2, c2.nascimento as Nascimento2 
-from cliente c1
+select c1.nome as Cliente1, c2.nome as Cliente2, c2.nascimento as 'Data de Nascimento'
+from cliente c1 
 left join cliente c2
-on c1.nascimento = c2.nascimento
-where c1.idcliente != c2.idcliente;
+on c1.idcliente != c2.idcliente
+where c1.nascimento = c2.nascimento;
 
 
 
 
 Exercício 25: Calcular o número total de livros publicados por ano:
 
-select publicacao as 'Ano de lançamento', count(idlivros) as 'Quantidade de livros por ano' from livros group by(publicacao) order by(publicacao) asc;
+select publicacao as 'Ano de lançamento', count(idlivros) as 'Quantidade de livros por ano' 
+from livros 
+group by(publicacao) 
+order by(publicacao) asc;
 
 
 
